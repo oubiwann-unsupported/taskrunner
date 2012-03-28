@@ -1,0 +1,18 @@
+system:
+    base-dir: ~/lab/DreamHost/
+    install-dir: ~/lab/DreamHost/packaging
+
+packaging:
+    upstream-repos:
+      - uri: lp:~ubuntu-server-dev/nova/essex
+      - uri: lp:~openstack-ubuntu-packagers/python-novaclient/ubuntu
+      - uri: lp:~ubuntu-server-dev/glance/essex
+      - uri: lp:~ubuntu-server-dev/swift/essex
+      - uri: lp:~ubuntu-server-dev/keystone/essex
+      - uri: lp:~ubuntu-server-dev/python-keystoneclient/essex
+      - uri: lp:~ubuntu-server-dev/horizon/essex
+      - uri: lp:~ubuntu-server-dev/quantum/essex
+      - uri: lp:~ubuntu-server-dev/python-quantumclient/essex
+      - uri: lp:~ubuntu-server-dev/melange/essex
+      - uri: lp:~ubuntu-server-dev/openstackx/essex
+      - uri: git://git.debian.org/openstack/python-cloudfiles.git
