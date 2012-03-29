@@ -1,9 +1,11 @@
-from unittest import TestCase
+from twisted.trial import unittest
 
 from dreambuilder.packager import service
 
 
-class PackagerServiceTest(TestCase):
+class PackagerServiceTest(unittest.TestCase):
+    """
+    """
     def test_options(self):
         """
         The option parser requires '--endpoint' and '--debug' option parsing.
@@ -18,15 +20,6 @@ class PackagerServiceTest(TestCase):
         o.parseOptions(["--debug"])
         self.failUnless(o['debug'])
 
-    def test_factory(self):
-        """
-        Check that the debug flag is set properly in ExampleFactory.
-        """
-        f = service.ExampleFactory()
-        self.failIf(f.debug)
-
-        f = service.ExampleFactory(True)
-        self.failUnless(f.debug)
 
     def test_makeService(self):
         """
@@ -36,7 +29,7 @@ class PackagerServiceTest(TestCase):
 
         ms = service.makeService({'debug':False, 'endpoint':'tcp:1234'})
 
-        example_server = ms.getServiceNamed('Example Server')
+        example_server = ms.getServiceNamed('Packager Service')
         self.failIf(example_server.factory.debug)
         self.assertEquals(example_server.endpoint._port, 1234)
 

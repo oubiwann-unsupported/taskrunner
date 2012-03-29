@@ -1,7 +1,10 @@
 from twisted.application import service, internet
-from twisted.internet import endpoints, protocol
+from twisted.internet import endpoints
 from twisted.python import log
 from twisted.python import usage
+
+from dreambuilder.config import Configuration
+from dreambuilder.packager import protocols
 
 
 DEFAULT_STRPORT = 'tcp:8000'
@@ -18,34 +21,15 @@ class Options(usage.Options):
     Endpoints are documented here in the API documentation:
     http://twistedmatrix.com/documents/current/api/twisted.internet.endpoints.html
     """
-    optFlags = [['debug', 'd', 'Emit debug messages']]
-    optParameters = [["endpoint", "s", DEFAULT_STRPORT,
-                      "string endpoint descriptiont to listen on, defaults to 'tcp:80'"]]
+    optFlags = [[
+        'debug', 'd', 'Emit debug messages']]
+    optParameters = [[
+        "endpoint", "s", DEFAULT_STRPORT,
+        "string endpoint descriptiont to listen on, defaults to 'tcp:80'"]]
 
-
-class ExampleProtocol(protocol.Protocol):
-    """
-    Your protocol would replace this placeholder.
-    """
-
-
-class ExampleFactory(protocol.ServerFactory):
-    """
-    Your factory would replace this placeholder. Note that there is a debug
-    option passed to __init__, this comes from the commandline when the command
-    "twistd example --debug" is used.
-    """
-    protocol = ExampleProtocol
-
-    def __init__(self, debug=False):
-        self.debug = debug
-
-    def connectionMade(self):
-        """
-        Small example of how to do switch on the debug flag.
-        """
-        if self.debug:
-            log.msg("Connection Made")
+    def parseArgs(self, verb, obj):
+        self['verb'] = verb
+        self['object'] = obj
 
 
 class SetupService(service.Service):
@@ -58,7 +42,7 @@ class SetupService(service.Service):
         """
         Custom initialisation code goes here.
         """
-        log.msg("Retriculating Splines")
+        log.msg("Retriculating Splines ...")
 
         self.reactor.callLater(3, self.done)
 
@@ -74,13 +58,14 @@ def makeService(options):
     other is an example custom Service that will do some set-up.
     """
     from twisted.internet import reactor
-
-    debug = options['debug']
-
-    f = ExampleFactory(debug=debug)
-    endpoint = endpoints.serverFromString(reactor, options['endpoint'])
+    
+    print options
+    config = Configuration(options)
+    f = protocols.ProcessFactory(config=config)
+    endpoint = endpoints.serverFromString(
+        reactor, config.get_endpoint(type="unix"))
     server_service = internet.StreamServerEndpointService(endpoint, f)
-    server_service.setName('Example Server')
+    server_service.setName('Packager Service')
 
     setup_service = SetupService(reactor)
 
