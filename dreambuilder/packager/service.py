@@ -1,5 +1,5 @@
 from twisted.application import service, internet
-from twisted.internet import endpoints
+from twisted.internet import endpoints, reactor
 from twisted.python import log
 from twisted.python import usage
 
@@ -23,9 +23,9 @@ class Options(usage.Options):
     """
     optFlags = [[
         'debug', 'd', 'Emit debug messages']]
-    optParameters = [[
-        "endpoint", "s", DEFAULT_STRPORT,
-        "string endpoint descriptiont to listen on, defaults to 'tcp:80'"]]
+    #optParameters = [[
+    #    "endpoint", "s", DEFAULT_STRPORT,
+    #    "string endpoint descriptiont to listen on, defaults to 'tcp:80'"]]
 
     def parseArgs(self, verb, obj):
         self['verb'] = verb
@@ -43,8 +43,7 @@ class SetupService(service.Service):
         Custom initialisation code goes here.
         """
         log.msg("Retriculating Splines ...")
-        
-        #reactor.callLater(3, self.done)
+        reactor.callWhenRunning(tasks.TaskDispatcher(self.config).dispatch)
 
     def done(self):
         log.msg("Finished retriculating splines")
@@ -57,8 +56,8 @@ def makeService(options):
     One is a ExampleFactory listening on the configured endpoint, and the
     other is an example custom Service that will do some set-up.
     """
-    print options
     config = Configuration(options)
+    config.debug = options["debug"]
     #f = protocols.ProcessFactory(config=config)
     #endpoint = endpoints.serverFromString(
     #    reactor, config.get_endpoint(type="unix"))
