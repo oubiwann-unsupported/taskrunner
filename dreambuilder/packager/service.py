@@ -4,7 +4,7 @@ from twisted.python import log
 from twisted.python import usage
 
 from dreambuilder.config import Configuration
-from dreambuilder.packager import protocols
+from dreambuilder.packager import tasks
 
 
 DEFAULT_STRPORT = 'tcp:8000'
@@ -35,16 +35,16 @@ class Options(usage.Options):
 class SetupService(service.Service):
     name = 'Setup Service'
 
-    def __init__(self, reactor):
-        self.reactor = reactor
+    def __init__(self, config):
+        self.config = config
 
     def startService(self):
         """
         Custom initialisation code goes here.
         """
         log.msg("Retriculating Splines ...")
-
-        self.reactor.callLater(3, self.done)
+        
+        #reactor.callLater(3, self.done)
 
     def done(self):
         log.msg("Finished retriculating splines")
@@ -57,20 +57,18 @@ def makeService(options):
     One is a ExampleFactory listening on the configured endpoint, and the
     other is an example custom Service that will do some set-up.
     """
-    from twisted.internet import reactor
-    
     print options
     config = Configuration(options)
-    f = protocols.ProcessFactory(config=config)
-    endpoint = endpoints.serverFromString(
-        reactor, config.get_endpoint(type="unix"))
-    server_service = internet.StreamServerEndpointService(endpoint, f)
-    server_service.setName('Packager Service')
+    #f = protocols.ProcessFactory(config=config)
+    #endpoint = endpoints.serverFromString(
+    #    reactor, config.get_endpoint(type="unix"))
+    #server_service = internet.StreamServerEndpointService(endpoint, f)
+    #server_service.setName('Packager Service')
 
-    setup_service = SetupService(reactor)
+    setup_service = SetupService(config)
 
-    ms = service.MultiService()
-    server_service.setServiceParent(ms)
-    setup_service.setServiceParent(ms)
+    top_level_service = service.MultiService()
+    #server_service.setServiceParent(top_level_service)
+    setup_service.setServiceParent(top_level_service)
 
-    return ms
+    return top_level_service
