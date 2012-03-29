@@ -1,3 +1,5 @@
+import os
+
 import yaml
 
 
@@ -10,31 +12,48 @@ class Configuration(object):
         self._config = yaml.load(fh)
         fh.close()
 
-    def get_upstream_repos(self):
+    @property
+    def upstream_repos(self):
         return self._config.get("packaging").get("upstream-repos")
 
-    def _get_upstream_repos(self, filter=""):
-        return [ x.get("uri") for x in
-                 self._config.get("packaging").get("upstream-repos")
-                 if x.get("uri").startswith(filter)]
+    @property
+    def user(self):
+        return self._config.get("system").get("user")
 
-    def get_upstream_lp_repos(self):
-        return " ".join(self._get_upstream_repos(config, filter="lp"))
+    @property
+    def home_dir(self):
+        return os.path.join(
+            self._config.get("system").get("home-dir"),
+            self.user)
 
-    def get_upstream_git_repos(self):
-        return " ".join(self._get_upstream_repos(config, filter="git"))
+    @property
+    def base_dir(self):
+        return os.path.join(
+            self.home_dir,
+            self._config.get("system").get("base-dir"))
 
-    def get_base_dir(self):
-        return self._config.get("system").get("base-dir")
+    @property
+    def install_dir(self):
+        return os.path.join(
+            self.base_dir,
+            self._config.get("system").get("install-dir"))
 
-    def get_install_dir(self):
-        return self._config.get("system").get("install-dir")
-
-    def get_socket(self):
+    @property
+    def socket(self):
         return self._config.get("packaging").get("service-socket")
 
     def get_endpoint(self, type=""):
         endpoint = self.options['endpoint']
         if not endpoint or type == "unix":
-            endpoint = "unix:%s" % self.get_socket()
+            endpoint = "unix:%s" % self.socket
         return endpoint
+
+    @property
+    def pre_install_deps(self):
+        return self._config.get(
+            "packaging").get("dependencies").get("pre-install")
+
+    @property
+    def post_install_deps(self):
+        return self._config.get(
+            "packaging").get("dependencies").get("post-install")

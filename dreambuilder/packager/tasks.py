@@ -7,26 +7,28 @@ from dreambuilder import exceptions
 
 
 def initialize(config):
-    # create base and install dirs
-    # install dependencies
-    pass
+    if config.debug:
+        log.msg("Initializing installation ...")
+    return [
+        "sudo apt-get install -y %s" % config.pre_install_deps,
+        "mkdir -p %s" % config.install_dir]
 
 
 def _install_lp_repo(uri, name, config):
     if config.debug:
         log.msg("Installing Launchpad repo %s from %s ..." % (name, uri))
-    return ["bzr branch"]
+    return ["bzr branch %s %s" % (uri, os.path.join(config.install_dir, name))]
 
 
 def _install_git_repo(uri, name, config):
     if config.debug:
         log.msg("Installing Git repo %s from %s ..." % (name, uri))
-    return ["ls /dev/null", "which ls"]
+    return ["git clone %s %s" % (uri, os.path.join(config.install_dir, name))]
 
 
 def install_repos(config, just_lp=False, just_git=False):
     commands = []
-    for data in config.get_upstream_repos():
+    for data in config.upstream_repos:
         uri = data["uri"]
         name = data["name"]
         if config.debug:
@@ -46,6 +48,12 @@ def install_git_repos(config):
     return install_repos(config, just_git=True)
 
 
+def finalize(config):
+    if config.debug:
+        log.msg("Running final commands ...")
+    return ["chown -R %s %s" % (config.user, config.install_dir)]
+
+
 command_mapper = {
     'install': {
         'lp-repos': install_lp_repos,
@@ -63,11 +71,14 @@ class TaskDispatcher(object):
         self.debug = config.debug
         self.verb = self.config.options["verb"]
         self.obj = self.config.options["object"]
+        self.start()
 
     def callback(self, result, command):
         out, err, signalNum = result
-        if err:
+        if err and signalNum != 0:
             self.errback("%s (signal number: %s)" % (err.strip(), signalNum))
+        elif err:
+            log.msg("Error? %s" % err)
         else:
             log.msg("The results of '%s'..." % command)
             log.msg(out.strip())
@@ -76,7 +87,10 @@ class TaskDispatcher(object):
         log.msg("ERROR: %s" % failure)
 
     def finish(self, result):
-        reactor.stop()
+        deferred = self.runCommands(finalize(self.config))
+        deferred.addErrback(self.errback)
+        deferred.addCallback(lambda ign: reactor.stop())
+        return deferred
 
     def run(self, command):
         args = command.split()
@@ -98,7 +112,9 @@ class TaskDispatcher(object):
         deferred_list = defer.DeferredList(deferreds)    
         return deferred_list
 
-    def dispatch(self):
+    def dispatch(self, results=None):
+        if self.debug and results:
+            log.msg("Start-up results: %s" % results)
         try:
             command_group = command_mapper[self.verb]
         except KeyError:
@@ -113,7 +129,12 @@ class TaskDispatcher(object):
         deferred.addErrback(self.errback)
         deferred.addCallback(self.runCommands)
         deferred.addErrback(self.errback)
-        deferred.addCallback(self.finish)
         return deferred
 
+    def start(self):
+        deferred = self.runCommands(initialize(self.config))
+        deferred.addErrback(self.errback)
+        deferred.addCallback(self.dispatch)
+        deferred.addErrback(self.errback)
+        deferred.addCallback(self.finish)
 

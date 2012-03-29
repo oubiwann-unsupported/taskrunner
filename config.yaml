@@ -1,9 +1,14 @@
 system:
-    base-dir: ~/lab/DreamHost/
-    install-dir: ~/lab/DreamHost/packaging
+    user: oubiwann
+    home-dir: /home
+    base-dir: lab/DreamHost
+    install-dir: packaging
 
 packaging:
     service-socket: /tmp/twistd-packager.sock
+    dependencies:
+        pre-install: [bzr, git]
+        post-install: []
     upstream-repos:
       - uri: lp:~ubuntu-server-dev/nova/essex
         name: nova
