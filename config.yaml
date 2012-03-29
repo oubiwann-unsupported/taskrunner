@@ -3,16 +3,29 @@ system:
     install-dir: ~/lab/DreamHost/packaging
 
 packaging:
+    service-socket: /tmp/twistd-packager.sock
     upstream-repos:
       - uri: lp:~ubuntu-server-dev/nova/essex
+        name: nova
       - uri: lp:~openstack-ubuntu-packagers/python-novaclient/ubuntu
+        name: python-novaclient
       - uri: lp:~ubuntu-server-dev/glance/essex
+        name: glance
       - uri: lp:~ubuntu-server-dev/swift/essex
+        name: swift
       - uri: lp:~ubuntu-server-dev/keystone/essex
+        name: keystone
       - uri: lp:~ubuntu-server-dev/python-keystoneclient/essex
+        name: python-keystoneclient
       - uri: lp:~ubuntu-server-dev/horizon/essex
+        name: horizon
       - uri: lp:~ubuntu-server-dev/quantum/essex
+        name: quantum
       - uri: lp:~ubuntu-server-dev/python-quantumclient/essex
+        name: python-quantumclient
       - uri: lp:~ubuntu-server-dev/melange/essex
+        name: melange
       - uri: lp:~ubuntu-server-dev/openstackx/essex
+        name: openstackx
       - uri: git://git.debian.org/openstack/python-cloudfiles.git
+        name: python-cloudfiles
