@@ -4,7 +4,7 @@ BASE_DIR := $(shell $(PYTHON) $(SCRIPT) get base-dir)
 INSTALL_DIR := $(shell $(PYTHON) $(SCRIPT) get install-dir)
 
 install-repo-deps:
-	sudo apt-get install -y python-yaml bzr git
+	sudo apt-get install -y python-yaml bzr git python-twisted
 
 dev-lp-repos: REPOS = $(shell $(PYTHON) $(SCRIPT) get lp-repos)
 dev-lp-repos:
@@ -16,4 +16,10 @@ dev-git-repos:
 
 dev-repos: install-repo-deps dev-lp-repos dev-git-repos
 
-.PHONY: install-repo-deps dev-repos
+
+install: install-repo-deps
+
+check:
+	trial dreambuilder
+
+.PHONY: install-repo-deps dev-repos install check
