@@ -1,24 +1,54 @@
 from dreambuilder import exceptions
 
 
-class SExpression(list):
+class SExpression(object):
     """
     """
+    def __init__(self, command):
+        self.command = command
+
+    def __repr__(self):
+        return "<class %s '%s'>" % (self.__class__.__name__, self.command)
 
 
 class CommandExpression(SExpression):
     """
     """
     def __init__(self, *args, **kwargs):
-                 #command="", halt_on_fail=False, message="", skip=False,
-                 #*args):
+        """
+        To get the cleanest usage, with lots of flexibility on what can
+        constitute a command, we need to not do named parameters, but rather
+        extract those from extended call syntax.
+
+        Args:
+            command (str): If the first positional parameter is a string, it
+                will be interpreted as a string.
+
+            command (CommandExpression): If the first argument is a
+                CommandExpression object, the remainder of the positional
+                arguments must also be CommandExpression objects.
+
+        Kwargs:
+            command (str): A text string representing a command to be executed.
+
+            halt_on_fail (bool): if True, and the command for this instance of
+                CommandExpression or any nested instances of CommandExpression
+                results in a failure, the program will be halted.
+
+            message (str): A message to write to the log file when this
+                instance of CommandExpression is eventually called.
+
+            skip (bool): If True, this command will not be called.
+        """
+        self.children = []
+        self.parse_kwargs(kwargs)
+        self.check_args(args)
+
+    def parse_kwargs(self, kwargs):
         self.command = kwargs.get("command") or ""
         self.halt_on_fail = kwargs.get("halt_on_fail") or False
         self.message = kwargs.get("message") or ""
         self.skip = kwargs.get("skip") or False
-        self.children = []
-        self.check_args(args)
-        self.check_children()
 
     def check_args(self, args):
         nested_index = 1
@@ -34,8 +64,18 @@ class CommandExpression(SExpression):
         # now that we know where the nested commands start, we can set the
         # children
         self.children = args[nested_index:]
+        self.check_children()
 
     def check_children(self):
-        for child in self.children:
+        children = self.children[:]
+        self.children = []
+        for child in children:
             if isinstance(child, basestring):
                 raise exceptions.MultipleCommandsError()
+            elif True in [isinstance(child, x) for x in [set, list, tuple]]:
+                self.children.extend(list(child))
+            elif isinstance(child, CommandExpression):
+                self.children.append(child)
+            else:
+                raise TypeError(
+                    "Don't know how to handle child %s" % str(child))
