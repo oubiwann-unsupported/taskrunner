@@ -80,6 +80,7 @@ class ProcessFactory(protocol.ServerFactory):
     """
     """
     protocol = ProcessProtocol
+    dispatcher = None
 
     def __init__(self, config=None):
         self.config = config
@@ -88,7 +89,7 @@ class ProcessFactory(protocol.ServerFactory):
     def dispatch(self):
         verb = self.config.options["verb"]
         obj = self.config.options["object"]
-        tasks.TaskDispatcher(self, verb, obj)
+        self.dispatcher(self, verb, obj)
 
     def run(self, command):
         args = command.split()

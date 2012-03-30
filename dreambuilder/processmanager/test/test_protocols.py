@@ -1,12 +1,11 @@
 from twisted.trial import unittest
 
-from dreambuilder.packager import protocols
+from dreambuilder.processmanager import protocols
 
 
 class ExampleProtocolTestCase(unittest.TestCase):
     """
     """
-
 
 
 class ExampleFactoryTestCase(unittest.TestCase):
@@ -21,3 +20,13 @@ class ExampleFactoryTestCase(unittest.TestCase):
 
         f = protocols.ExampleFactory(True)
         self.failUnless(f.debug)
+
+
+class ProcessProtocolTestCase(unittest.TestCase):
+    """
+    """
+
+
+class ProcessFactoryTestCase(unittest.TestCase):
+    """
+    """

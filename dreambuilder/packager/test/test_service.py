@@ -1,58 +1,34 @@
+from twisted.internet import defer, reactor
 from twisted.trial import unittest
 
-from dreambuilder.packager import service
+from dreambuilder.config import Configuration
+from dreambuilder.packager import service, tasks
 
 
-class PackagerServiceTest(unittest.TestCase):
+class PackagerServiceTestCase(unittest.TestCase):
     """
     """
-    def test_options(self):
-        """
-        The option parser requires '--endpoint' and '--debug' option parsing.
-        """
-        o = service.Options()
-
-        self.assertEquals(o['endpoint'], 'tcp:8000')
-        o.parseOptions(["--endpoint=tcp:80"])
-        self.assertEquals(o['endpoint'], 'tcp:80')
-
-        self.failIf(o['debug'])
-        o.parseOptions(["--debug"])
-        self.failUnless(o['debug'])
-
-
     def test_makeService(self):
         """
         Check that makeService returns services that have the right information
         in them.
         """
+        def fake_dispatch():
+            print "Caling fake_dispatch ..."
+            self.dispatch_called = True
 
-        ms = service.makeService({'debug':False, 'endpoint':'tcp:1234'})
+        def fake_getStartCallable(ignored):
+            print "calling fake_getStartCallable ..."
+            return fake_dispatch
 
-        example_server = ms.getServiceNamed('Packager Service')
-        self.failIf(example_server.factory.debug)
-        self.assertEquals(example_server.endpoint._port, 1234)
-
-        setup_service = ms.getServiceNamed('Setup Service')
-
-        self.failUnless(isinstance(setup_service, service.SetupService))
-
-    def test_startSetupService(self):
-        """
-        When setupservice is started, it will set up a callLater. Verify this
-        behaviour.
-        """
-        class MockReactor:
-            def __init__(self):
-                self.calls = []
-
-            def callLater(self, time, *args):
-                self.calls.append((time, args))
-
-        mockReactor = MockReactor()
-        s = service.SetupService(mockReactor)
-
-        self.assertEqual(mockReactor.calls, [])
-        s.startService()
-
-        self.assertEqual(mockReactor.calls, [(3, (s.done,))])
+        self.patch(service.PackagerService, "getStartCallable", 
+                   fake_getStartCallable)
+        self.dispatch_called = False
+        ms = service.makeService(
+            {'debug': False, 'verb': 'install', 'object': 'repos'},
+            "../config.yaml")
+        packager_service = ms.getServiceNamed('Packager Service')
+        packager_service.startService()
+        self.failUnless(isinstance(packager_service, service.PackagerService))
+        self.assertEqual(self.dispatch_called, True)
+        packager_service.stopService()

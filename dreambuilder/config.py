@@ -6,7 +6,9 @@ import yaml
 class Configuration(object):
     """
     """
-    def __init__(self, options, filename="./config.yaml"):
+    def __init__(self, options, filename):
+        if not filename:
+            filename = "./config.yaml"
         self.options = options
         fh = open(filename, "r")
         self._config = yaml.load(fh)
