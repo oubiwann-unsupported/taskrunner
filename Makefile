@@ -1,11 +1,13 @@
-PYTHON := python2.7
-SCRIPT := config.py
-BASE_DIR := $(shell $(PYTHON) $(SCRIPT) get base-dir)
-INSTALL_DIR := $(shell $(PYTHON) $(SCRIPT) get install-dir)
+clean:
+	find . -name "*.pyc" -exec rm -v {} \;
+	rm -rfv _trial_temp
 
 install: install-repo-deps
 
 check:
 	trial dreambuilder
+
+run:
+	twistd -n packager install repos
 
 .PHONY: install-repo-deps dev-repos install check
