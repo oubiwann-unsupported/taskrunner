@@ -130,3 +130,27 @@ class CommandExpressionTestCase(unittest.TestCase):
         self.assertEqual(commands.children[10].command, "something strange")
         self.assertEqual(commands.children[13].command,
                          "an after-afterthought command")
+
+    def test_complex_commands(self):
+
+        commands = complex_commands()
+        self.assertEqual(commands.command, "")
+        self.assertEqual(len(commands.children), 3)
+        self.assertEqual(len(commands.children[0].children), 1)
+        self.assertEqual(len(commands.children[1].children), 5)
+        self.assertEqual(len(commands.children[2].children), 0)
+        self.assertEqual(len(commands.children[1].children[4].children), 12)
+        self.assertEqual(len(commands.children[1].children[3].children), 1)
+        self.assertEqual(len(
+            commands.children[1].children[3].children[0].children), 1)
+        self.assertEqual(len(
+            commands.children[1].children[3].children[0].children[0].children),
+            1)
+        self.assertEqual(len(
+            commands.children[1].children[3].children[0].children[0].
+            children[0].children),
+            1)
+        self.assertEqual(len(
+            commands.children[1].children[3].children[0].children[0].
+            children[0].children[0].children),
+            0)
