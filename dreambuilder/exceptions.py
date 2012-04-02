@@ -28,3 +28,6 @@ class MultipleCommandsError(ExpressionError):
     """
     Only one string command per CommandExpression is permitted.
     """
+
+class NoDescendantError(Error):
+    pass

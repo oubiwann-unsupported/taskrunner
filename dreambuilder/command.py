@@ -37,9 +37,11 @@ class CommandExpression(object):
         self.children = []
         self.parse_kwargs(kwargs)
         self.check_args(args)
+        self.class_name = self.__class__.__name__
 
     def __repr__(self):
-        return "<class %s '%s'>" % (self.__class__.__name__, self.command)
+        return "<class %s '%s'>" % (self.class_name, self.command)
+
 
     def parse_kwargs(self, kwargs):
         self.command = kwargs.get("command") or ""
@@ -81,3 +83,19 @@ class CommandExpression(object):
         if len(self.children) > 0:
             return True
         return False
+
+    def get_descendant(self, *indices):
+        try:
+            child = self.children[indices[0]]
+        except IndexError:
+            msg = "%s has no descendant at index 0 with value %s" % (
+                self.class_name, indices[0],)
+            raise exceptions.NoDescendantError(msg)
+        for index_index, index_value in enumerate(indices[1:]):
+            try:
+                child = child.children[index_value]
+            except IndexError:
+                msg = "%s has no descendant at index %s with value %s" % (
+                    self.class_name, index_index, index_value)
+                raise exceptions.NoDescendantError(msg)
+        return child
