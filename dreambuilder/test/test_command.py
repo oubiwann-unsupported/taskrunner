@@ -44,6 +44,36 @@ def complex_commands():
         CExp("post-install check"),
     )
 
+complex_commands_flat = """
+pre-install check
+do primary install
+post-install check
+install deps
+run a parallel process
+run another one
+run a thrid one
+run a fourth one, with a long chain
+run a fifth, with a big parallel batch afterwards
+install a dependency service
+after 4th, do 4.1
+batch job 1
+batch job 2
+batch job 3
+batch job 4
+batch job 5
+batch job 6
+batch job 7
+batch job 8
+batch job 9
+batch job 10
+batch job 11
+batch job 12
+start service
+after 4.1, do 4.2
+after 4.2, do 4.3
+after 4.3, do 4.4
+"""
+
 
 class CommandExpressionTestCase(unittest.TestCase):
     """
@@ -195,3 +225,12 @@ class CommandExpressionTestCase(unittest.TestCase):
         self.assertFalse(commands.get_descendant(1,0).has_children())
         self.assertFalse(commands.get_descendant(1,3,0,0,0,0).has_children())
         self.assertFalse(commands.get_descendant(2).has_children())
+
+    def test_walk(self):
+        commands = complex_commands()
+        all_children = list(commands.walk())
+        self.assertEqual(len(all_children), 28)
+        self.assertEqual(
+            "\n".join([x.command for x in all_children]).strip(),
+            complex_commands_flat.strip())
+

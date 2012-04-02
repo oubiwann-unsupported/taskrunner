@@ -74,6 +74,7 @@ class CommandExpression(object):
             elif True in [isinstance(child, x) for x in [set, list, tuple]]:
                 self.children.extend(list(child))
             elif isinstance(child, CommandExpression):
+                child.parent = self
                 self.children.append(child)
             else:
                 raise TypeError(
@@ -98,3 +99,14 @@ class CommandExpression(object):
                     self.class_name, index_index, index_value)
                 raise exceptions.NoDescendantError(msg)
         return child
+
+    def walk(self):
+        """
+        This is a depth-first search of the the expression for any nested
+        expressions.
+        """
+        stack = [self]
+        while stack:
+            current = stack.pop(0)
+            yield current
+            stack.extend(current.children)
