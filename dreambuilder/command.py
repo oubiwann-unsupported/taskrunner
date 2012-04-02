@@ -1,17 +1,7 @@
 from dreambuilder import exceptions
 
 
-class SExpression(object):
-    """
-    """
-    def __init__(self, command):
-        self.command = command
-
-    def __repr__(self):
-        return "<class %s '%s'>" % (self.__class__.__name__, self.command)
-
-
-class CommandExpression(SExpression):
+class CommandExpression(object):
     """
     """
     def __init__(self, *args, **kwargs):
@@ -40,9 +30,16 @@ class CommandExpression(SExpression):
 
             skip (bool): If True, this command will not be called.
         """
+        self.command = ""
+        self.halt_on_fail = False
+        self.message = ""
+        self.skip = False
         self.children = []
         self.parse_kwargs(kwargs)
         self.check_args(args)
+
+    def __repr__(self):
+        return "<class %s '%s'>" % (self.__class__.__name__, self.command)
 
     def parse_kwargs(self, kwargs):
         self.command = kwargs.get("command") or ""
@@ -79,3 +76,8 @@ class CommandExpression(SExpression):
             else:
                 raise TypeError(
                     "Don't know how to handle child %s" % str(child))
+
+    def has_children(self):
+        if len(self.children) > 0:
+            return True
+        return False
