@@ -234,3 +234,14 @@ class CommandExpressionTestCase(unittest.TestCase):
             "\n".join([x.command for x in all_children]).strip(),
             complex_commands_flat.strip())
 
+    def test_parent_attribute(self):
+        commands = complex_commands()
+        no_parent = 0
+        has_parent = 0
+        for child in commands.walk():
+            if child.parent:
+                has_parent += 1
+            else:
+                no_parent += 1
+        self.assertEqual(no_parent, 1)
+        self.assertEqual(has_parent, 27)

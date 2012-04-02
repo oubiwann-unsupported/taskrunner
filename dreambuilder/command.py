@@ -35,13 +35,13 @@ class CommandExpression(object):
         self.message = ""
         self.skip = False
         self.children = []
+        self.parent = None
         self.parse_kwargs(kwargs)
         self.check_args(args)
         self.class_name = self.__class__.__name__
 
     def __repr__(self):
         return "<class %s '%s'>" % (self.class_name, self.command)
-
 
     def parse_kwargs(self, kwargs):
         self.command = kwargs.get("command") or ""
