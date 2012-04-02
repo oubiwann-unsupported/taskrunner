@@ -186,8 +186,12 @@ class CommandExpressionTestCase(unittest.TestCase):
     def test_has_children(self):
         commands = complex_commands()
         self.assertTrue(commands.has_children())
-        self.assertTrue(commands.children[0].has_children())
+        self.assertTrue(commands.get_descendant(0).has_children())
+        self.assertTrue(commands.get_descendant(1).has_children())
         self.assertTrue(commands.get_descendant(0,0,0).has_children())
+        self.assertTrue(commands.get_descendant(1,3,0).has_children())
+
         self.assertFalse(commands.get_descendant(0,0,0,0).has_children())
-        self.assertTrue(commands.children[1].has_children())
-        self.assertFalse(commands.children[2].has_children())
+        self.assertFalse(commands.get_descendant(1,0).has_children())
+        self.assertFalse(commands.get_descendant(1,3,0,0,0,0).has_children())
+        self.assertFalse(commands.get_descendant(2).has_children())
