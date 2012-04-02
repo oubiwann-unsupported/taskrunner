@@ -84,6 +84,13 @@ class CommandExpression(object):
         # turning the list into a boolean
         return not not self.children
 
+    def has_siblings(self):
+        if not self.parent:
+            return False
+        if len(self.parent.children) > 1:
+            return True
+        return False
+
     def get_descendant(self, *indices):
         try:
             child = self.children[indices[0]]

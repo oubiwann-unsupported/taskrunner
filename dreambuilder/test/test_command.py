@@ -226,6 +226,28 @@ class CommandExpressionTestCase(unittest.TestCase):
         self.assertFalse(commands.get_descendant(1,3,0,0,0,0).has_children())
         self.assertFalse(commands.get_descendant(2).has_children())
 
+    def test_has_siblings(self):
+        commands = complex_commands()
+        self.assertFalse(commands.has_siblings())
+        self.assertFalse(commands.get_descendant(0,0).has_siblings())
+        self.assertFalse(commands.get_descendant(0,0,0).has_siblings())
+        self.assertFalse(commands.get_descendant(0,0,0,0).has_siblings())
+        self.assertFalse(commands.get_descendant(1,3,0).has_siblings())
+        self.assertFalse(commands.get_descendant(1,3,0,0).has_siblings())
+        self.assertFalse(commands.get_descendant(1,3,0,0,0).has_siblings())
+        self.assertFalse(commands.get_descendant(1,3,0,0,0,).has_siblings())
+
+        self.assertTrue(commands.get_descendant(0).has_siblings())
+        self.assertTrue(commands.get_descendant(1).has_siblings())
+        self.assertTrue(commands.get_descendant(1,0).has_siblings())
+        self.assertTrue(commands.get_descendant(1,1).has_siblings())
+        self.assertTrue(commands.get_descendant(1,2).has_siblings())
+        self.assertTrue(commands.get_descendant(1,3).has_siblings())
+        self.assertTrue(commands.get_descendant(1,4).has_siblings())
+        self.assertTrue(commands.get_descendant(1,4,0).has_siblings())
+        self.assertTrue(commands.get_descendant(1,4,11).has_siblings())
+        self.assertTrue(commands.get_descendant(2).has_siblings())
+
     def test_walk(self):
         commands = complex_commands()
         all_children = list(commands.walk())
