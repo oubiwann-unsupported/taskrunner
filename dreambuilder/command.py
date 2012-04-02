@@ -80,9 +80,8 @@ class CommandExpression(object):
                     "Don't know how to handle child %s" % str(child))
 
     def has_children(self):
-        if len(self.children) > 0:
-            return True
-        return False
+        # turning the list into a boolean
+        return not not self.children
 
     def get_descendant(self, *indices):
         try:
