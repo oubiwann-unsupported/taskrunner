@@ -53,3 +53,18 @@ def complete_install(config):
         tasks.build_repos_cexp(),
         tasks.post_install_cexp
     )
+
+
+# This is used by the packager service so that the ProcessDispatcher can call
+# the CommandExpression instance that is appropriate for the verb-object pair
+# that was passed as arguments to twistd on the command line.
+#
+# Note that for the object keys, the corresponding value needs to be a
+# callable.
+command_mapper = {
+    "install": {
+        "deps": Tasks().pre_install_cexp
+        "repos": Tasks().build_repos_cexp
+        "all": complete_install,
+    },
+}

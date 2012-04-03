@@ -1,7 +1,34 @@
+from twisted.internet import defer, reactor, utils
+
+
+class ProcessParallelizer(object):
+    """
+    This class takes one or more commands (potentially nested) in the form of
+    a CommandExpression instance and converts each of these commands into
+    deferreds, and converts groups of them into deferred lists.
+
+    The rules are as follows:
+
+    1) for each node in the expression, call utils.getProcessOutputAndValue and
+       add general errbacks/callbacks for them
+    2) if a node has siblings, gather their deferreds (returned from
+       getProcessOutputAndValue), and put them in a deferred list
+       and add general errbacks/callbacks for them
+    3) for each nested command, ensure that it gets its deferred created in a
+       callback of the current node's deferred
+    4) if any of the nodes should halt on fail, add that specific errback to
+       its deferred
+    """
+    def __init__(self, command_expression):
+        self.commands = command_expression
+
+    def 
+
+
 class ProcessDispatcher(object):
     """
     """
-    def __init__(self, config, command_mapper, commands):
+    def __init__(self, config, command_mapper):
         self.config = config
         self.debug = config.debug
         self.verb = self.config.options["verb"]

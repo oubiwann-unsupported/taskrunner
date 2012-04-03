@@ -107,13 +107,30 @@ class CommandExpression(object):
                 raise exceptions.NoDescendantError(msg)
         return child
 
-    def walk(self):
+    def depth_first(self):
         """
-        This is a depth-first search of the the expression for any nested
-        expressions.
+        """
+        stack = [self]
+        while stack:
+            current = stack.pop(0)
+            yield current
+            stack = current.children + stack
+
+    def breadth_first(self):
+        """
         """
         stack = [self]
         while stack:
             current = stack.pop(0)
             yield current
             stack.extend(current.children)
+
+    def walk(self, type="depth"):
+        """
+        This is a depth-first search of the the expression for any nested
+        expressions.
+        """
+        if type == "depth":
+            return depth_first()
+        elif type == "breadth":
+            return breadthe_first()

@@ -185,34 +185,6 @@ class CommandExpressionTestCase(unittest.TestCase):
             children[0].children[0].children),
             0)
 
-    def test_get_descendant(self):
-        commands = complex_commands()
-        self.assertEqual(commands.get_descendant(
-            0).command, "pre-install check")
-        self.assertEqual(commands.get_descendant(
-            0,0).command, "install deps")
-        self.assertEqual(commands.get_descendant(
-            0,0,0).command, "install a dependency service")
-        self.assertEqual(commands.get_descendant(
-            0,0,0,0).command, "start service")
-        self.assertEqual(commands.get_descendant(
-            1).command, "do primary install")
-        self.assertEqual(commands.get_descendant(
-            1,3).command, "run a fourth one, with a long chain")
-        self.assertEqual(commands.get_descendant(
-            1,3,0,0,0,0).command, "after 4.3, do 4.4")
-        self.assertRaises(
-            exceptions.NoDescendantError, commands.get_descendant,
-            1,3,0,0,0,0,0)
-        self.assertEqual(commands.get_descendant(
-            1,4).command, "run a fifth, with a big parallel batch afterwards")
-        self.assertEqual(commands.get_descendant(
-            1,4,0).command, "batch job 1")
-        self.assertEqual(commands.get_descendant(
-            1,4,11).command, "batch job 12")
-        self.assertEqual(commands.get_descendant(
-            2).command, "post-install check")
-
     def test_has_children(self):
         commands = complex_commands()
         self.assertTrue(commands.has_children())
@@ -248,6 +220,34 @@ class CommandExpressionTestCase(unittest.TestCase):
         self.assertTrue(commands.get_descendant(1,4,11).has_siblings())
         self.assertTrue(commands.get_descendant(2).has_siblings())
 
+    def test_get_descendant(self):
+        commands = complex_commands()
+        self.assertEqual(commands.get_descendant(
+            0).command, "pre-install check")
+        self.assertEqual(commands.get_descendant(
+            0,0).command, "install deps")
+        self.assertEqual(commands.get_descendant(
+            0,0,0).command, "install a dependency service")
+        self.assertEqual(commands.get_descendant(
+            0,0,0,0).command, "start service")
+        self.assertEqual(commands.get_descendant(
+            1).command, "do primary install")
+        self.assertEqual(commands.get_descendant(
+            1,3).command, "run a fourth one, with a long chain")
+        self.assertEqual(commands.get_descendant(
+            1,3,0,0,0,0).command, "after 4.3, do 4.4")
+        self.assertRaises(
+            exceptions.NoDescendantError, commands.get_descendant,
+            1,3,0,0,0,0,0)
+        self.assertEqual(commands.get_descendant(
+            1,4).command, "run a fifth, with a big parallel batch afterwards")
+        self.assertEqual(commands.get_descendant(
+            1,4,0).command, "batch job 1")
+        self.assertEqual(commands.get_descendant(
+            1,4,11).command, "batch job 12")
+        self.assertEqual(commands.get_descendant(
+            2).command, "post-install check")
+
     def test_walk(self):
         commands = complex_commands()
         all_children = list(commands.walk())
@@ -267,3 +267,11 @@ class CommandExpressionTestCase(unittest.TestCase):
                 no_parent += 1
         self.assertEqual(no_parent, 1)
         self.assertEqual(has_parent, 27)
+
+    def test_bread_firsth(self):
+        """
+        """
+
+    def test_bread_firsth(self):
+        """
+        """
