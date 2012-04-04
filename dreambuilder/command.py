@@ -131,6 +131,6 @@ class CommandExpression(object):
         expressions.
         """
         if type == "depth":
-            return depth_first()
+            return self.depth_first()
         elif type == "breadth":
-            return breadthe_first()
+            return self.breadth_first()

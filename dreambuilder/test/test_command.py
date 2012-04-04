@@ -44,7 +44,7 @@ def complex_commands():
         CExp("post-install check"),
     )
 
-complex_commands_flat = """
+complex_commands_flat_breadth_first = """
 pre-install check
 do primary install
 post-install check
@@ -72,6 +72,36 @@ start service
 after 4.1, do 4.2
 after 4.2, do 4.3
 after 4.3, do 4.4
+"""
+
+complex_commands_flat_depth_first = """
+pre-install check
+install deps
+install a dependency service
+start service
+do primary install
+run a parallel process
+run another one
+run a thrid one
+run a fourth one, with a long chain
+after 4th, do 4.1
+after 4.1, do 4.2
+after 4.2, do 4.3
+after 4.3, do 4.4
+run a fifth, with a big parallel batch afterwards
+batch job 1
+batch job 2
+batch job 3
+batch job 4
+batch job 5
+batch job 6
+batch job 7
+batch job 8
+batch job 9
+batch job 10
+batch job 11
+batch job 12
+post-install check
 """
 
 
@@ -248,14 +278,6 @@ class CommandExpressionTestCase(unittest.TestCase):
         self.assertEqual(commands.get_descendant(
             2).command, "post-install check")
 
-    def test_walk(self):
-        commands = complex_commands()
-        all_children = list(commands.walk())
-        self.assertEqual(len(all_children), 28)
-        self.assertEqual(
-            "\n".join([x.command for x in all_children]).strip(),
-            complex_commands_flat.strip())
-
     def test_parent_attribute(self):
         commands = complex_commands()
         no_parent = 0
@@ -268,10 +290,24 @@ class CommandExpressionTestCase(unittest.TestCase):
         self.assertEqual(no_parent, 1)
         self.assertEqual(has_parent, 27)
 
-    def test_bread_firsth(self):
+    def test_walk_breadth_first(self):
         """
         """
+        commands = complex_commands()
+        all_children = list(commands.walk(type="breadth"))
+        self.assertEqual(len(all_children), 28)
+        self.assertEqual(
+            "\n".join([x.command for x in all_children]).strip(),
+            complex_commands_flat_breadth_first.strip())
 
-    def test_bread_firsth(self):
+    def test_walk_depth_first(self):
         """
         """
+        commands = complex_commands()
+        all_children = list(commands.walk(type="depth"))
+        default = list(commands.walk())
+        self.assertEqual(len(all_children), 28)
+        self.assertEqual(all_children, default)
+        self.assertEqual(
+            "\n".join([x.command for x in all_children]).strip(),
+            complex_commands_flat_depth_first.strip())
