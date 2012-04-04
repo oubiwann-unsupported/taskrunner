@@ -107,7 +107,7 @@ class CommandExpression(object):
                 raise exceptions.NoDescendantError(msg)
         return child
 
-    def depth_first(self):
+    def _depth_first_traversal(self):
         """
         """
         stack = [self]
@@ -116,7 +116,7 @@ class CommandExpression(object):
             yield current
             stack = current.children + stack
 
-    def breadth_first(self):
+    def _breadth_first_traversal(self):
         """
         """
         stack = [self]
@@ -131,6 +131,6 @@ class CommandExpression(object):
         expressions.
         """
         if type == "depth":
-            return self.depth_first()
+            return self._depth_first_traversal()
         elif type == "breadth":
-            return self.breadth_first()
+            return self._breadth_first_traversal()
