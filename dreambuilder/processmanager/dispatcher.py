@@ -1,4 +1,9 @@
+import os
+
 from twisted.internet import defer, reactor, utils
+from twisted.python import log
+
+from dreambuilder import exceptions
 
 
 class ProcessParallelizer(object):
@@ -22,7 +27,34 @@ class ProcessParallelizer(object):
     def __init__(self, command_expression):
         self.commands = command_expression
 
-    def 
+    def callback(self, *args):
+        log.msg("in callback: %s" % str(args))
+
+    def errback(self, failure):
+        log.msg("ERROR: %s" % failure)
+
+    def halt(self, ignore):
+        reactor.stop()
+
+    def get_deferreds(self, commands=None):
+        if not commands:
+            commands = self.commands
+        deferreds = []
+        for command_exp in commands.walk():
+            print ""
+            print command_exp
+            print command_exp.command
+            args = command_exp.command.split()
+            executable = args[0]
+            deferred = utils.getProcessOutputAndValue(
+                executable, args=args[1:], env=os.environ)
+            deferred.addErrback(self.errback)
+            if command_exp.halt_on_fail:
+                deferred.addCallback(self.halt)
+            deferred.addCallback(self.callback)
+            deferred.addErrback(self.errback)
+            deferreds.append(deferred)
+        return defer.DeferredList(deferreds)
 
 
 class ProcessDispatcher(object):
@@ -34,8 +66,7 @@ class ProcessDispatcher(object):
         self.verb = self.config.options["verb"]
         self.obj = self.config.options["object"]
         self.command_mapper = command_mapper
-        self.commands = commands
-        self.start()
+        self.dispatch()
 
     def callback(self, result, command):
         out, err, signalNum = result
@@ -89,11 +120,7 @@ class ProcessDispatcher(object):
                 log.msg("this is the command function: %s" % command_function)
         except KeyError:
             raise exceptions.UnknownObjectParameter(self.obj)
-        deferred = defer.maybeDeferred(command_function, self.config)
-        deferred.addErrback(self.errback)
-        deferred.addCallback(self.runCommands)
-        deferred.addErrback(self.errback)
-        return deferred
+        return ProcessParallelizer(command_function).get_deferreds()
 
     def start(self):
         deferred = self.runCommands(initialize(self.config))

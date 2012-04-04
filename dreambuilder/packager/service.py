@@ -16,7 +16,7 @@ class PackagerService(service.ConfigurationService):
         """
         """
         package_dispatcher = dispatcher.ProcessDispatcher(
-            self.config, tasks.command_mapper)
+            self.config, tasks.get_command_mapper(self.config))
         return package_dispatcher.dispatch
 
     def startService(self):

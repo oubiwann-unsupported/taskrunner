@@ -6,7 +6,7 @@ from dreambuilder.processmanager import dispatcher
 
 
 def fake_getProcessOutputAndValue(executable, args, env={}):
-    return defer.Deferred()    
+    return defer.succeed("Yay!")
 
 
 class ProcessParallelizerTestCase(unittest.TestCase):
@@ -18,6 +18,17 @@ class ProcessParallelizerTestCase(unittest.TestCase):
             fake_getProcessOutputAndValue)
 
     def test_command_as_deferred(self):
-        command = CExp("Do this thing")
 
-        
+        def check(result):
+            self.assertEqual(result, [(True, None)])
+
+        commands = CExp("Do this thing")
+        parallelizer = dispatcher.ProcessParallelizer(commands)
+        deferreds = parallelizer.get_deferreds()
+        deferreds.addCallback(check)
+        return deferreds
+
+
+class ProcessDispatcherTestCase(unittest.TestCase):
+    """
+    """

@@ -23,23 +23,23 @@ class Tasks(object):
             message="Running final commands ..."
         )
 
-    def build_repos_cexp(config, just_lp=False, just_git=False):
+    def build_repos_cexp(self, just_lp=False, just_git=False):
         commands = []
-        for data in config.upstream_repos:
+        for data in self.config.upstream_repos:
             uri = data["uri"]
             name = data["name"]
-            if config.debug:
+            if self.config.debug:
                 log.msg("%s, %s" % (uri, name))
             if not just_git and uri.startswith("lp"):
                 cexp = CExp(
                     "bzr branch %s %s" % (
-                        uri, os.path.join(config.install_dir, name)),
+                        uri, os.path.join(self.config.install_dir, name)),
                     message="Installing Launchpad repo %s from %s ..." % (
                         name, uri))
             elif not just_lp and uri.startswith('git'):
                 cexp = CExp(
                     "git clone %s %s" % (
-                        uri, os.path.join(config.install_dir, name)),
+                        uri, os.path.join(self.config.install_dir, name)),
                     message="Installing Git repo %s from %s ..." % (
                         name, uri))
             commands.append(cexp)
@@ -61,10 +61,11 @@ def complete_install(config):
 #
 # Note that for the object keys, the corresponding value needs to be a
 # callable.
-command_mapper = {
+def get_command_mapper(config):
+    return {
     "install": {
-        "deps": Tasks().pre_install_cexp
-        "repos": Tasks().build_repos_cexp
-        "all": complete_install,
+        "deps": Tasks(config).pre_install_cexp,
+        "repos": Tasks(config).build_repos_cexp,
+        "all": complete_install(config),
     },
 }
