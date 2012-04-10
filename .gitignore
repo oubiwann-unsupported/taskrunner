@@ -3,3 +3,5 @@
 _trial_temp
 dropin.cache
 Session.vim
+twistd.log
+twistd.pid
