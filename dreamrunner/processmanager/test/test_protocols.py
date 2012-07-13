@@ -1,6 +1,6 @@
 from twisted.trial import unittest
 
-from dreambuilder.processmanager import protocols
+from dreamrunner.processmanager import protocols
 
 
 class ExampleProtocolTestCase(unittest.TestCase):

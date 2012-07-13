@@ -1,7 +1,7 @@
 from twisted.trial import unittest
 
-from dreambuilder import exceptions
-from dreambuilder.command import CommandExpression as CExp
+from dreamrunner import exceptions
+from dreamrunner.command import CommandExpression as CExp
 
 
 def complex_commands():

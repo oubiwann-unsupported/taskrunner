@@ -1,8 +1,8 @@
 from twisted.internet import defer
 from twisted.trial import unittest
 
-from dreambuilder.command import CommandExpression as CExp
-from dreambuilder.processmanager import dispatcher
+from dreamrunner.command import CommandExpression as CExp
+from dreamrunner.processmanager import dispatcher
 
 
 def fake_getProcessOutputAndValue(executable, args, env={}):

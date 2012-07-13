@@ -3,7 +3,7 @@ import os
 from twisted.internet import defer, reactor, utils
 from twisted.python import log
 
-from dreambuilder import exceptions
+from dreamrunner import exceptions
 
 
 class ProcessParallelizer(object):

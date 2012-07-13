@@ -1,11 +1,11 @@
 from twisted.internet import reactor
 from twisted.python import log
 
-from dreambuilder import service
-from dreambuilder.config import Configuration
-from dreambuilder.packager import tasks
-from dreambuilder.processmanager import dispatcher
-from dreambuilder.service import Options
+from dreamrunner import service
+from dreamrunner.config import Configuration
+from dreamrunner.packager import tasks
+from dreamrunner.processmanager import dispatcher
+from dreamrunner.service import Options
 
 
 class PackagerService(service.ConfigurationService):

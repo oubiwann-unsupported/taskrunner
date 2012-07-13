@@ -1,8 +1,8 @@
 from twisted.internet import defer, reactor
 from twisted.trial import unittest
 
-from dreambuilder.config import Configuration
-from dreambuilder.packager import service, tasks
+from dreamrunner.config import Configuration
+from dreamrunner.packager import service, tasks
 
 
 class PackagerServiceTestCase(unittest.TestCase):

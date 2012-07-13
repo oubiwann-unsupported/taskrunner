@@ -3,7 +3,7 @@ import re
 from twisted.internet import protocol
 from twisted.internet import reactor
 
-from dreambuilder.packager import tasks
+from dreamrunner.packager import tasks
 
 
 class ExampleProtocol(protocol.Protocol):

@@ -1,7 +1,7 @@
 from twisted.trial import unittest
 
-from dreambuilder import service
-from dreambuilder.config import Configuration
+from dreamrunner import service
+from dreamrunner.config import Configuration
 
 
 class OptionsTestCase(unittest.TestCase):
