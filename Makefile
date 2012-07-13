@@ -6,7 +6,7 @@ clean:
 install: install-repo-deps
 
 check:
-	trial dreambuilder
+	trial dreamrunner
 
 run:
 	twistd -n packager install repos
