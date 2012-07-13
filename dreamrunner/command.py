@@ -82,7 +82,7 @@ class CommandExpression(object):
 
     def has_children(self):
         # turning the list into a boolean
-        return not not self.children
+        return bool(self.children)
 
     def has_siblings(self):
         if not self.parent:
